@@ -1,0 +1,249 @@
+﻿@using u22524861_HW03.Models
+@model u22524861_HW03.Models.ViewModel
+@using PagedList.Mvc
+@using PagedList
+<link href="~/Content/PagedList.css" rel="stylesheet" />
+<link rel="stylesheet" href="~/Content/Styling.css" />
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+@{
+    ViewBag.Title = "Home";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 rounded-grid">
+            <h2>Students</h2>
+            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#CreateStudent">Create</button>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Name</th>
+                        <th>Surname</th>
+                        <th>Birthdate</th>
+                        <th>Gender</th>
+                        <th>Class</th>
+                        <th>Point</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var student in Model.studentList)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(model => student.studentId)</td>
+                            <td>@Html.DisplayFor(model => student.name)</td>
+                            <td>@Html.DisplayFor(model => student.surname)</td>
+                            <td>@Html.DisplayFor(model => student.birthdate)</td>
+                            <td>@Html.DisplayFor(model => student.gender)</td>
+                            <td>@Html.DisplayFor(model => student.studentClass)</td>
+                            <td>@Html.DisplayFor(model => student.point)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div>
+                Page @(Model.studentList.PageCount < Model.studentList.PageNumber ? 0 : Model.studentList.PageNumber) of @Model.studentList.PageCount
+                @Html.PagedListPager(Model.studentList, page => Url.Action("Home", new { studentPage = page }))
+
+            </div>
+        </div>
+
+        <div class="col-md-5 rounded-grid">
+            <h2>Books</h2>
+            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#CreateBook">Create</button>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Book ID</th>
+                        <th>Name</th>
+                        <th>Page Count</th>
+                        <th>Point</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var book in Model.bookList)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(model => book.bookId)</td>
+                            <td>@Html.DisplayFor(model => book.name)</td>
+                            <td>@Html.DisplayFor(model => book.pagecount)</td>
+                            <td>@Html.DisplayFor(model => book.point)</td>
+                            <td>
+                                @if (Model.borrowList2.Any(b => b.bookId == book.bookId))
+                                {
+                                    <span class="text-danger">Out</span>
+                                }
+                                else
+                                {
+                                    <span class="text-success">Available</span>
+                                }
+                             </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div>
+                Page @(Model.bookList.PageCount < Model.bookList.PageNumber ? 0 : Model.bookList.PageNumber) of @Model.bookList.PageCount
+                @Html.PagedListPager(Model.bookList, page => Url.Action("Home", new { bookPage = page }))
+            </div>
+        </div>
+    </div>
+</div>
+
+@* CREATE STUDENT MODAL POPUP *@
+<div class="modal fade" id="CreateStudent" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Create</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm("Create", "students", FormMethod.Post, new { @class = "form-horizontal" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.studentList.FirstOrDefault().name, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.studentList.FirstOrDefault().name, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.studentList.FirstOrDefault().name, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.studentList.FirstOrDefault().surname, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.studentList.FirstOrDefault().surname, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.studentList.FirstOrDefault().surname, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.studentList.FirstOrDefault().birthdate, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.studentList.FirstOrDefault().birthdate, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.studentList.FirstOrDefault().birthdate, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.studentList.FirstOrDefault().gender, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.studentList.FirstOrDefault().gender, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.studentList.FirstOrDefault().gender, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.studentList.FirstOrDefault().studentClass, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.studentList.FirstOrDefault().studentClass, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.studentList.FirstOrDefault().studentClass, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.studentList.FirstOrDefault().point, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.studentList.FirstOrDefault().point, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.studentList.FirstOrDefault().point, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10">
+                                <input type="submit" value="Create" class="btn btn-secondary" />
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* CREATE BOOK MODAL POPUP *@
+<div class="modal fade" id="CreateBook" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Create</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm("Create", "books", FormMethod.Post, new { @class = "form-horizontal" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal">
+                        <h4>books</h4>
+                        <hr />
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.bookList.FirstOrDefault().name, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.bookList.FirstOrDefault().name, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.bookList.FirstOrDefault().name, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.bookList.FirstOrDefault().pagecount, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.bookList.FirstOrDefault().pagecount, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.bookList.FirstOrDefault().pagecount, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.bookList.FirstOrDefault().point, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.bookList.FirstOrDefault().point, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.bookList.FirstOrDefault().point, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.bookList.FirstOrDefault().authorId, "authorId", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.DropDownList("authorId", null, htmlAttributes: new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.bookList.FirstOrDefault().authorId, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.bookList.FirstOrDefault().typeId, "typeId", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.DropDownList("typeId", null, htmlAttributes: new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.bookList.FirstOrDefault().typeId, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10">
+                                <input type="submit" value="Create" class="btn btn-default" />
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
